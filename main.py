@@ -9,8 +9,42 @@ class LogicalResolution:
         # Храним все возможные резольвенты
         resolved = set(self.statements)
         new_resolved = set()
+        print(resolved)
 
         while True:
+            for i in self.statements:
+                if "=>" not in i:
+                    continue
+                A, B = i.split(" => ")
+                if "NOT" in A:
+                    A = A[-1]
+                else:
+                    A = f"NOT {A}"
+                if "NOT" in B:
+                    B = B[-1]
+                else:
+                    B = f"NOT {B}"
+                new_resolved.add(f"{B} => {A}")
+                resolved = resolved.union(new_resolved)
+
+            for i in self.statements:
+                if "=>" not in i:
+                    continue
+                A, B = i.split(" => ")
+                if A == B:
+                    continue
+                if A[-1] == B[-1]:
+                    if "NOT" in A:
+                        self.add_statement(B)
+                        new_resolved.add(B)
+                        resolved = resolved.union(new_resolved)
+                    else:/
+                        self.add_statement(B)
+                        new_resolved.add(B)
+                        resolved = resolved.union(new_resolved)
+
+
+
             # Счетчик для проверки появления новых резольвентов
             resolved_length = len(resolved)
 
@@ -102,7 +136,19 @@ def main2():
     # Проверяем на противоречия
     logic.resolve()
 
+def main3():
+    logic = LogicalResolution()
+
+    # Добавляем утверждения
+    logic.add_statement("NOT A => A")
+    logic.add_statement("A => NOT A")
+
+
+
+    # Проверяем на противоречия
+    logic.resolve()
 
 if __name__ == "__main__":
     main1()
     main2()
+    main3()
