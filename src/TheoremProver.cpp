@@ -1,4 +1,5 @@
 #include "TheoremProver.h"
+#include <algorithm>
 
 // Конструктор загружает начальные аксиомы
 TheoremProver::TheoremProver() {
@@ -39,19 +40,26 @@ bool TheoremProver::Prove(const std::shared_ptr<Node>& target) {
         }
 
         // Применяем подстановки аксиом
-        auto axioms = Axioms::GetAxioms1To3();
-        for (const auto& axiom : axioms) {
-            // Пример подстановки для текущей формулы
-            std::unordered_map<std::string, std::shared_ptr<Node>> substitution = {
-                {"A", current},
-                {"B", current->left},
-                {"C", current->right}
-            };
 
-            auto substituted = ApplySubstitution(axiom, substitution);
-            if (substituted) {
-                AddFormula(substituted);
-            }
+        auto axioms = Axioms::GetAxioms1To3();
+        for (auto& axiom : axioms) {
+            std::vector<std::string> variables = {"A", "B", "C"};
+            std::vector<std::shared_ptr<Node>> values = {current, current->left, current->right};
+            do {
+                for (size_t i = 0; i < (1 << variables.size()); ++i) {
+                    std::unordered_map<std::string, std::shared_ptr<Node>> substitution;
+
+                    for (size_t j = 0; j < variables.size(); ++j) {
+                        if (i & (1 << j)) {
+                            substitution[variables[j]] = values[j];
+                        }
+                    }
+                    auto substituted = ApplySubstitution(axiom, substitution);
+                    if (substituted) {
+                        AddFormula(substituted);
+                    }
+                }
+            } while (std::next_permutation(values.begin(), values.end()));
         }
 
         std::queue<std::shared_ptr<Node>> q_copy = formulaQueue;
