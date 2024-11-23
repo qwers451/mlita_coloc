@@ -17,12 +17,16 @@ R3 = A
 
 R4 = NOT C
 
-R5 = R1 r R2 = A => C
+R5 = NOT B => NOT A
 
-R6 = R2 r R4 = NOT B
+R6 = NOT C => NOT B
 
-R7 = R5 r R4 = NOT A
+R7 = R1 r R2 = A => C
 
-R8  = R1 r R6 = NOT A
+R8 = R2 r R4 = NOT B
+
+R9 = R7 r R4 = NOT A
+
+R10  = R1 r R8 = NOT A
 
 Так как в наборе пристуствуют A и NOT A набор противоречив.
